@@ -1,0 +1,67 @@
+
+[
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_classic_black",
+    "label": "Classic Black",
+    "prompt_text": "a classic, elegant black color",
+    "tags": ["black", "classic", "formal", "timeless"],
+    "order": 0
+  },
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_ruby_red",
+    "label": "Ruby Red",
+    "prompt_text": "a vibrant and passionate ruby red color",
+    "tags": ["red", "bold", "romantic", "vibrant"],
+    "order": 1
+  },
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_sapphire_blue",
+    "label": "Sapphire Blue",
+    "prompt_text": "a deep and luxurious sapphire blue color",
+    "tags": ["blue", "royal", "elegant", "deep"],
+    "order": 2
+  },
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_emerald_green",
+    "label": "Emerald Green",
+    "prompt_text": "a rich and striking emerald green color",
+    "tags": ["green", "jewel-tone", "luxurious", "vivid"],
+    "order": 3
+  },
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_champagne_gold",
+    "label": "Champagne Gold",
+    "prompt_text": "a shimmering and celebratory champagne gold color",
+    "tags": ["gold", "champagne", "metallic", "glamorous"],
+    "order": 4
+  },
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_silver_metallic",
+    "label": "Silver Metallic",
+    "prompt_text": "a sleek and modern silver metallic color",
+    "tags": ["silver", "metallic", "futuristic", "sleek"],
+    "order": 5
+  },
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_pastel_pink",
+    "label": "Pastel Pink",
+    "prompt_text": "a soft and delicate pastel pink color",
+    "tags": ["pink", "pastel", "soft", "romantic"],
+    "order": 6
+  },
+  {
+    "category": "dress_colour",
+    "id": "dress_colour_deep_burgundy",
+    "label": "Deep Burgundy",
+    "prompt_text": "a deep and sophisticated burgundy wine color",
+    "tags": ["burgundy", "wine", "deep", "sophisticated"],
+    "order": 7
+  }
+]

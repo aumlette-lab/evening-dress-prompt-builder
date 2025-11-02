@@ -1,0 +1,27 @@
+{
+  "name": "evening-dress-prompt-builder",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:lite": "cross-env ENABLE_AI=false vite",
+    "dev:full": "cross-env ENABLE_AI=true vite",
+    "build": "vite build",
+    "build:lite": "cross-env ENABLE_AI=false vite build",
+    "build:full": "cross-env ENABLE_AI=true vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react-dom": "^19.2.0",
+    "react": "^19.2.0",
+    "@google/genai": "^1.27.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "cross-env": "^7.0.3",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}
