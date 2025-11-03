@@ -273,8 +273,8 @@ const App: React.FC = () => {
                     </div>
                 </header>
 
-                <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-stretch">
-                    <div className="flex flex-col gap-8 lg:h-full">
+                <div className="flex flex-col gap-8 lg:flex-row lg:items-stretch">
+                    <div className="flex flex-col gap-8 lg:flex-[0.65]">
                         <div className="flex flex-col gap-8 flex-1">
                             <div className="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700">
                             <h3 className="text-xl font-semibold text-cyan-400 mb-4">Consistency Options</h3>
@@ -306,8 +306,8 @@ const App: React.FC = () => {
                         </button>
                     </div>
 
-                    <div className="flex flex-col h-full">
-                        <div className="flex-1 flex">
+                    <div className="lg:flex-[0.35] flex">
+                        <div className="flex-1">
                             <OutputBox
                                 prompt={prompt}
                                 onPromptChange={setPrompt}
