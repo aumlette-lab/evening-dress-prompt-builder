@@ -19,7 +19,12 @@ export interface RemovalSelection {
   label: string;
 }
 
-export type SelectionValue = TaxonomyItem | RemovalSelection;
+export interface MultiSelection {
+  category: string;
+  items: TaxonomyItem[];
+}
+
+export type SelectionValue = TaxonomyItem | RemovalSelection | MultiSelection;
 
 export interface Selections {
   [key: string]: SelectionValue;
@@ -28,6 +33,14 @@ export interface Selections {
 export const isRemovalSelection = (
   value: SelectionValue | undefined
 ): value is RemovalSelection => value?.id === REMOVE_SELECTION_ID;
+
+export const isMultiSelection = (
+  value: SelectionValue | undefined
+): value is MultiSelection => Boolean(value && 'items' in value && Array.isArray((value as MultiSelection).items));
+
+export const isTaxonomySelection = (
+  value: SelectionValue | undefined
+): value is TaxonomyItem => Boolean(value && 'prompt_text' in value);
 
 export interface AnalyzedTaxonomyItem {
   label: string;

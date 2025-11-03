@@ -5,11 +5,12 @@ import { IS_AI_ENABLED, GEMINI_API_KEY } from './config';
 
 // FIX: Import TaxonomyItem to be used for explicit typing.
 import type { TaxonomyData, Selections, AnalyzedTaxonomyItem, TaxonomyItem } from './types';
-import { REMOVE_SELECTION_ID, isRemovalSelection } from './types';
+import { REMOVE_SELECTION_ID, isRemovalSelection, isMultiSelection, isTaxonomySelection } from './types';
 import { VISUAL_ELEMENT_GROUPS, CATEGORIES } from './constants';
 import { fetchTaxonomyViaJsonp, saveTaxonomyData } from './api';
 
 import Select from './components/Select';
+import MultiSelect from './components/MultiSelect';
 import OutputBox from './components/OutputBox';
 import TaxonomyManager from './components/TaxonomyManager';
 import ImageAnalyzerModal from './components/ImageAnalyzerModal';
@@ -20,7 +21,7 @@ import Toggle from './components/Toggle';
 
 const PRIMARY_MODEL = 'gemini-2.5-flash';
 const FALLBACK_MODEL = 'gemini-1.5-flash';
-const REMOVABLE_CATEGORIES = new Set(['bags', 'accessory']);
+const REMOVABLE_CATEGORIES = new Set(['bags']);
 
 const shouldRetryWithFallback = (error: unknown): boolean => {
     if (!error || typeof error !== 'object') return false;
@@ -123,6 +124,32 @@ const App: React.FC = () => {
         });
     };
 
+    const handleMultiSelectionChange = (categoryId: string, itemIds: string[]) => {
+        setSelections(prev => {
+            const newSelections = { ...prev };
+            if (!taxonomyData?.[categoryId]) {
+                delete newSelections[categoryId];
+                return newSelections;
+            }
+
+            if (itemIds.length === 0) {
+                delete newSelections[categoryId];
+                return newSelections;
+            }
+
+            const items: TaxonomyItem[] = itemIds
+                .map(id => taxonomyData[categoryId].find(item => item.id === id))
+                .filter((item): item is TaxonomyItem => Boolean(item));
+
+            newSelections[categoryId] = {
+                category: categoryId,
+                items,
+            };
+
+            return newSelections;
+        });
+    };
+
     const generatePrompt = useCallback(() => {
         const finalPromptParts: string[] = [];
 
@@ -144,6 +171,15 @@ const App: React.FC = () => {
             if (isRemovalSelection(selection)) {
                 const removalSentence = `Remove the ${categoryLabel}.`;
                 instructionParts.push(removalSentence);
+            } else if (isMultiSelection(selection)) {
+                if (selection.items.length > 0) {
+                    const promptTexts = selection.items.map(item => item.prompt_text);
+                    const changeSentence = `Change the ${categoryLabel} to ${promptTexts.join(', ')}.`;
+                    instructionParts.push(changeSentence);
+                } else {
+                    const keepSentence = `Keep the existing ${categoryLabel}.`;
+                    instructionParts.push(keepSentence);
+                }
             } else if (selection && 'prompt_text' in selection) {
                 const promptText = selection.prompt_text;
                 const changeSentence = `Change the ${categoryLabel} to ${promptText}.`;
@@ -287,16 +323,47 @@ const App: React.FC = () => {
                             <div key={group.title} className="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700">
                                 <h3 className="text-xl font-semibold text-cyan-400 mb-4">{group.title}</h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                {group.categories.map(category => (
-                                    <Select
-                                        key={category.id}
-                                        label={category.label}
-                                        options={taxonomyData?.[category.id] || []}
-                                        value={selections[category.id]?.id || ''}
-                                        onChange={(e) => handleSelectionChange(category.id, e.target.value)}
-                                        allowRemove={REMOVABLE_CATEGORIES.has(category.id)}
-                                    />
-                                ))}
+                                {group.categories.map(category => {
+                                    const options = taxonomyData?.[category.id] || [];
+                                    const selection = selections[category.id];
+
+                                    if (category.id === 'accessory') {
+                                        let selectedIds: string[] = [];
+                                        if (isMultiSelection(selection)) {
+                                            selectedIds = selection.items.map(item => item.id);
+                                        } else if (isTaxonomySelection(selection)) {
+                                            selectedIds = [selection.id];
+                                        }
+
+                                        return (
+                                            <MultiSelect
+                                                key={category.id}
+                                                label={category.label}
+                                                options={options}
+                                                selectedIds={selectedIds}
+                                                onChange={(ids) => handleMultiSelectionChange(category.id, ids)}
+                                            />
+                                        );
+                                    }
+
+                                    let value = '';
+                                    if (isRemovalSelection(selection)) {
+                                        value = selection.id;
+                                    } else if (isTaxonomySelection(selection)) {
+                                        value = selection.id;
+                                    }
+
+                                    return (
+                                        <Select
+                                            key={category.id}
+                                            label={category.label}
+                                            options={options}
+                                            value={value}
+                                            onChange={(e) => handleSelectionChange(category.id, e.target.value)}
+                                            allowRemove={REMOVABLE_CATEGORIES.has(category.id)}
+                                        />
+                                    );
+                                })}
                                 </div>
                             </div>
                         ))}
