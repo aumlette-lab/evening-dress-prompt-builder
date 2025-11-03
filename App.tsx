@@ -15,7 +15,7 @@ import TaxonomyManager from './components/TaxonomyManager';
 import ImageAnalyzerModal from './components/ImageAnalyzerModal';
 import ApiConfiguration from './components/ApiConfiguration';
 import ConnectionTroubleshooter from './components/ConnectionTroubleshooter';
-import { CogIcon, CameraIcon, RefreshIcon, MoonIcon, PencilIcon } from './components/Icons';
+import { CogIcon, CameraIcon, RefreshIcon, DressIcon, PencilIcon } from './components/Icons';
 import Toggle from './components/Toggle';
 
 const PRIMARY_MODEL = 'gemini-2.5-flash';
@@ -247,7 +247,7 @@ const App: React.FC = () => {
             <main className="max-w-screen-2xl mx-auto">
                 <header className="flex flex-wrap gap-4 justify-between items-center mb-8">
                     <div className="flex items-center gap-4">
-                        <MoonIcon className="h-10 w-10 text-fuchsia-400" />
+                        <DressIcon className="h-10 w-10 text-fuchsia-400" />
                         <div>
                            <h1 className="text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-cyan-400">Evening Dress Prompt Builder</h1>
                            <p className="text-sm text-slate-400">Edits are saved in-session. Click "Save to Google Sheet" in the manager to persist changes.</p>
@@ -273,9 +273,10 @@ const App: React.FC = () => {
                     </div>
                 </header>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="flex flex-col gap-8">
-                        <div className="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700">
+                <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:items-stretch">
+                    <div className="flex flex-col gap-8 lg:h-full">
+                        <div className="flex flex-col gap-8 flex-1">
+                            <div className="bg-slate-800/50 p-6 rounded-2xl shadow-lg border border-slate-700">
                             <h3 className="text-xl font-semibold text-cyan-400 mb-4">Consistency Options</h3>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
                                 <Toggle label="Face" checked={keepFace} onChange={setKeepFace} />
@@ -299,21 +300,24 @@ const App: React.FC = () => {
                                 </div>
                             </div>
                         ))}
+                        </div>
                         <button onClick={handleReset} className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-slate-600 rounded-md text-sm font-medium text-slate-300 hover:bg-slate-700 transition-colors">
                             <RefreshIcon className="h-4 w-4" /> Reset All Selections
                         </button>
                     </div>
 
-                    <div className="sticky top-8 h-fit">
-                       <OutputBox
-                            prompt={prompt}
-                            onPromptChange={setPrompt}
-                            onRefine={handleRefinePrompt}
-                            isRefining={isRefining}
-                            error={refineError}
-                            modelUsed={refineModelUsed}
-                            aiEnabled={isAiEnabled}
-                        />
+                    <div className="flex flex-col h-full">
+                        <div className="flex-1 flex">
+                            <OutputBox
+                                prompt={prompt}
+                                onPromptChange={setPrompt}
+                                onRefine={handleRefinePrompt}
+                                isRefining={isRefining}
+                                error={refineError}
+                                modelUsed={refineModelUsed}
+                                aiEnabled={isAiEnabled}
+                            />
+                        </div>
                     </div>
                 </div>
 
