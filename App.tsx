@@ -4,7 +4,7 @@ import { GoogleGenAI } from '@google/genai';
 import { IS_AI_ENABLED, GEMINI_API_KEY } from './config';
 
 // FIX: Import TaxonomyItem to be used for explicit typing.
-import type { TaxonomyData, Selections, AnalyzedTaxonomyItem, TaxonomyItem } from './types';
+import type { TaxonomyData, Selections, AnalyzedTaxonomyItem, TaxonomyItem, PromptSegment } from './types';
 import { REMOVE_SELECTION_ID, isRemovalSelection, isMultiSelection, isTaxonomySelection } from './types';
 import { VISUAL_ELEMENT_GROUPS, CATEGORIES } from './constants';
 import { fetchTaxonomyViaJsonp, saveTaxonomyData } from './api';
@@ -36,6 +36,7 @@ const App: React.FC = () => {
     const [taxonomyData, setTaxonomyData] = useState<TaxonomyData | null>(null);
     const [selections, setSelections] = useState<Selections>({});
     const [prompt, setPrompt] = useState<string>('');
+    const [promptSegments, setPromptSegments] = useState<PromptSegment[]>([]);
     const [status, setStatus] = useState<'loading' | 'idle' | 'error' | 'unconfigured'>('loading');
     const [error, setError] = useState<string | null>(null);
     const [isDirty, setIsDirty] = useState(false);
@@ -151,7 +152,7 @@ const App: React.FC = () => {
     };
 
     const generatePrompt = useCallback(() => {
-        const finalPromptParts: string[] = [];
+        const segments: PromptSegment[] = [];
 
         // 1. Consistency Options first
         const consistencyOptions: string[] = [];
@@ -159,48 +160,72 @@ const App: React.FC = () => {
         if (keepDress) consistencyOptions.push('dress design detail and fabric texture');
 
         if (consistencyOptions.length > 0) {
-            finalPromptParts.push(`Keep the existing ${consistencyOptions.join(', ')}.`);
+            const consistencySentence = `Keep the existing ${consistencyOptions.join(', ')}.`;
+            segments.push({
+                id: 'consistency',
+                label: 'Consistency',
+                text: consistencySentence,
+                mode: 'consistency',
+            });
         }
 
         // 2. Build change/keep sentences for all visual elements
-        const instructionParts: string[] = [];
         CATEGORIES.forEach(category => {
             const categoryLabel = category.label.toLowerCase();
             const selection = selections[category.id];
+            let sentence: string;
+            let mode: PromptSegment['mode'];
 
             if (isRemovalSelection(selection)) {
-                const removalSentence = `Remove the ${categoryLabel}.`;
-                instructionParts.push(removalSentence);
+                sentence = `Remove the ${categoryLabel}.`;
+                mode = 'remove';
             } else if (isMultiSelection(selection)) {
                 if (selection.items.length > 0) {
                     const promptTexts = selection.items.map(item => item.prompt_text);
-                    const changeSentence = `Change the ${categoryLabel} to ${promptTexts.join(', ')}.`;
-                    instructionParts.push(changeSentence);
+                    sentence = `Change the ${categoryLabel} to ${promptTexts.join(', ')}.`;
+                    mode = 'change';
                 } else {
-                    const keepSentence = `Keep the existing ${categoryLabel}.`;
-                    instructionParts.push(keepSentence);
+                    sentence = `Keep the existing ${categoryLabel}.`;
+                    mode = 'keep';
                 }
             } else if (selection && 'prompt_text' in selection) {
                 const promptText = selection.prompt_text;
-                const changeSentence = `Change the ${categoryLabel} to ${promptText}.`;
-                instructionParts.push(changeSentence);
+                sentence = `Change the ${categoryLabel} to ${promptText}.`;
+                mode = 'change';
             } else {
-                const keepSentence = `Keep the existing ${categoryLabel}.`;
-                instructionParts.push(keepSentence);
+                sentence = `Keep the existing ${categoryLabel}.`;
+                mode = 'keep';
             }
+
+            segments.push({
+                id: category.id,
+                label: category.label,
+                text: sentence,
+                mode,
+            });
         });
         
-        if (instructionParts.length > 0) {
-            finalPromptParts.push(instructionParts.join(' '));
-        }
-
-        setPrompt(finalPromptParts.join(' '));
+        const combinedPrompt = segments.map(segment => segment.text).join(' ');
+        setPromptSegments(segments);
+        setPrompt(combinedPrompt);
 
     }, [selections, keepFace, keepDress]);
 
     useEffect(() => {
         generatePrompt();
     }, [generatePrompt]);
+
+    const handleSegmentTextChange = (index: number, newText: string) => {
+        setPromptSegments(prevSegments => {
+            if (!prevSegments.length) return prevSegments;
+            const updated = [...prevSegments];
+            if (!updated[index]) return prevSegments;
+            updated[index] = { ...updated[index], text: newText };
+            const updatedPrompt = updated.map(segment => segment.text).join(' ');
+            setPrompt(updatedPrompt);
+            return updated;
+        });
+    };
 
     const isAiEnabled = IS_AI_ENABLED && Boolean(GEMINI_API_KEY);
 
@@ -229,6 +254,14 @@ const App: React.FC = () => {
         try {
             const refined = await tryModel(PRIMARY_MODEL);
             setPrompt(refined);
+            setPromptSegments([
+                {
+                    id: 'refined',
+                    label: 'Refined Prompt',
+                    text: refined,
+                    mode: 'refined',
+                },
+            ]);
             setRefineModelUsed(PRIMARY_MODEL);
             setRefineError(null);
         } catch (err) {
@@ -236,6 +269,14 @@ const App: React.FC = () => {
                 try {
                     const refinedFallback = await tryModel(FALLBACK_MODEL);
                     setPrompt(refinedFallback);
+                    setPromptSegments([
+                        {
+                            id: 'refined',
+                            label: 'Refined Prompt',
+                            text: refinedFallback,
+                            mode: 'refined',
+                        },
+                    ]);
                     setRefineModelUsed(FALLBACK_MODEL);
                     setRefineError(`Primary model unavailable. Used ${FALLBACK_MODEL} instead.`);
                 } catch (fallbackErr) {
@@ -377,12 +418,13 @@ const App: React.FC = () => {
                         <div className="flex-1">
                             <OutputBox
                                 prompt={prompt}
-                                onPromptChange={setPrompt}
                                 onRefine={handleRefinePrompt}
                                 isRefining={isRefining}
                                 error={refineError}
                                 modelUsed={refineModelUsed}
                                 aiEnabled={isAiEnabled}
+                                segments={promptSegments}
+                                onSegmentChange={handleSegmentTextChange}
                             />
                         </div>
                     </div>

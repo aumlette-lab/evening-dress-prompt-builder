@@ -67,3 +67,21 @@ export const VISUAL_ELEMENT_GROUPS: VisualElementGroup[] = [
     ]
   }
 ];
+
+export const CATEGORY_HIGHLIGHT_CLASSES: Record<string, string> = {
+  ethnicity: 'bg-fuchsia-500/10 border border-fuchsia-500/30',
+  body_type: 'bg-cyan-500/10 border border-cyan-500/30',
+  hair: 'bg-amber-500/10 border border-amber-500/30',
+  dress_colour: 'bg-emerald-500/10 border border-emerald-500/30',
+  bags: 'bg-rose-500/10 border border-rose-500/30',
+  accessory: 'bg-sky-500/10 border border-sky-500/30',
+  shoes: 'bg-violet-500/10 border border-violet-500/30',
+  pose: 'bg-indigo-500/10 border border-indigo-500/30',
+  hands_arms: 'bg-lime-500/10 border border-lime-500/30',
+  expression: 'bg-purple-500/10 border border-purple-500/30',
+  scene: 'bg-teal-500/10 border border-teal-500/30',
+  lighting: 'bg-orange-500/10 border border-orange-500/30',
+  style: 'bg-blue-500/10 border border-blue-500/30',
+  focal_feel: 'bg-pink-500/10 border border-pink-500/30',
+  camera_angle: 'bg-red-500/10 border border-red-500/30',
+};

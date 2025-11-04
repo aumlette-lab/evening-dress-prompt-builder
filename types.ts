@@ -61,3 +61,12 @@ export interface VisualElementGroup {
     title: string;
     categories: Category[];
 }
+
+export type PromptSegmentMode = 'consistency' | 'change' | 'keep' | 'remove' | 'custom' | 'refined';
+
+export interface PromptSegment {
+  id: string;
+  label: string;
+  text: string;
+  mode: PromptSegmentMode;
+}
