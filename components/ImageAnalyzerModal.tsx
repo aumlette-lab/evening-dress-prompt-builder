@@ -6,8 +6,8 @@ import type { AnalyzedTaxonomyItem, AnalyzedTaxonomyResult } from '../types';
 import { XMarkIcon, UploadIcon, SparklesIcon, ClipboardIcon, CheckIcon, PlusIcon } from './Icons';
 import { GEMINI_API_KEY } from '../config';
 
-const PRIMARY_MODEL = 'gemini-2.5-flash';
-const FALLBACK_MODEL = 'gemini-1.5-flash';
+const PRIMARY_MODEL = 'gemini-2.0-flash';
+const FALLBACK_MODEL = 'gemini-1.5-flash-latest';
 
 const shouldRetryWithFallback = (error: unknown): boolean => {
   if (!error || typeof error !== 'object') return false;

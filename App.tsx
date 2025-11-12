@@ -19,8 +19,9 @@ import ConnectionTroubleshooter from './components/ConnectionTroubleshooter';
 import { CogIcon, CameraIcon, RefreshIcon, DressIcon, PencilIcon } from './components/Icons';
 import Toggle from './components/Toggle';
 
-const PRIMARY_MODEL = 'gemini-2.5-flash';
-const FALLBACK_MODEL = 'gemini-1.5-flash';
+// Use generally available Gemini model IDs so users don't hit 404s when Google deprecates previews.
+const PRIMARY_MODEL = 'gemini-2.0-flash';
+const FALLBACK_MODEL = 'gemini-1.5-flash-latest';
 const REMOVABLE_CATEGORIES = new Set(['bags']);
 
 const shouldRetryWithFallback = (error: unknown): boolean => {
