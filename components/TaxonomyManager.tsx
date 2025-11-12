@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import type { TaxonomyData, TaxonomyItem } from '../types';
 import { CATEGORIES } from '../constants';
 import TaxonomyItemForm from './TaxonomyItemForm';
-import { XMarkIcon, PlusIcon, PencilIcon, TrashIcon, CogIcon, ArrowUpIcon, ArrowDownIcon } from './Icons';
+import { XMarkIcon, PlusIcon, PencilIcon, TrashIcon, CogIcon, ArrowUpIcon, ArrowDownIcon, DuplicateIcon } from './Icons';
 
 interface TaxonomyManagerProps {
   initialData: TaxonomyData;
@@ -52,6 +52,35 @@ const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({ initialData, onClose,
         handleLocalUpdate(newData);
         setIsFormOpen(false);
         setEditingItem(null);
+    };
+
+    const generateDuplicateLabel = (label: string, category: string) => {
+        const existingLabels = new Set((localData[category] || []).map(item => item.label.toLowerCase()));
+        const baseLabel = `${label} Copy`;
+        if (!existingLabels.has(baseLabel.toLowerCase())) {
+            return baseLabel;
+        }
+
+        let counter = 2;
+        while (true) {
+            const candidate = `${baseLabel} ${counter}`;
+            if (!existingLabels.has(candidate.toLowerCase())) {
+                return candidate;
+            }
+            counter += 1;
+        }
+    };
+
+    const handleDuplicate = (itemToDuplicate: TaxonomyItem) => {
+        const duplicateLabel = generateDuplicateLabel(itemToDuplicate.label, itemToDuplicate.category);
+        setActiveCategory(itemToDuplicate.category);
+        setEditingItem({
+            ...itemToDuplicate,
+            id: undefined,
+            label: duplicateLabel,
+            order: undefined,
+        });
+        setIsFormOpen(true);
     };
     
     const handleDelete = (itemToDelete: TaxonomyItem) => {
@@ -158,6 +187,7 @@ const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({ initialData, onClose,
                         <div className="flex gap-1 flex-shrink-0 items-center">
                              <button onClick={() => handleReorder(index, 'up')} disabled={index === 0} className="p-1 text-slate-400 hover:text-white disabled:opacity-30"><ArrowUpIcon className="h-4 w-4" /></button>
                              <button onClick={() => handleReorder(index, 'down')} disabled={index === sortedActiveCategoryItems.length - 1} className="p-1 text-slate-400 hover:text-white disabled:opacity-30"><ArrowDownIcon className="h-4 w-4" /></button>
+                             <button onClick={() => handleDuplicate(item)} className="p-2 text-slate-400 hover:text-indigo-400" title="Duplicate item"><DuplicateIcon className="h-5 w-5" /></button>
                              <button onClick={() => { setEditingItem(item); setIsFormOpen(true); }} className="p-2 text-slate-400 hover:text-cyan-400"><PencilIcon className="h-5 w-5" /></button>
                              <button onClick={() => handleDelete(item)} className="p-2 text-slate-400 hover:text-red-400"><TrashIcon className="h-5 w-5" /></button>
                         </div>

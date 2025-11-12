@@ -156,6 +156,12 @@ export const ArrowDownIcon: React.FC<IconProps> = (props) => (
     </svg>
 );
 
+export const DuplicateIcon: React.FC<IconProps> = (props) => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 15h-1.5A2.25 2.25 0 014.5 12.75v-7.5A2.25 2.25 0 016.75 3h7.5A2.25 2.25 0 0116.5 5.25v1.5M9.75 9h7.5A2.25 2.25 0 0119.5 11.25v7.5A2.25 2.25 0 0117.25 21h-7.5A2.25 2.25 0 017.5 18.75v-7.5A2.25 2.25 0 019.75 9z" />
+    </svg>
+);
+
 export const DownloadIcon: React.FC<IconProps> = (props) => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
