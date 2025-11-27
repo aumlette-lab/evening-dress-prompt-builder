@@ -101,9 +101,17 @@ const ImageAnalyzerModal: React.FC<ImageAnalyzerModalProps> = ({ onClose, onAddT
       const categoryList = CATEGORIES.map(c => `\`${c.id}\``).join(', ');
       
       const properties = CATEGORIES.reduce((acc, category) => {
+          const isScene = category.id === 'scene';
+          const isLighting = category.id === 'lighting';
+          const description = isScene
+              ? 'Scene description with environment, spatial layout, foreground/background details, mood, and notable elements. Do NOT describe lighting here; reserve lighting for the lighting category.'
+              : isLighting
+                  ? 'Lighting description covering direction, quality, color temperature, intensity, shadows/highlights, and how it shapes the scene.'
+                  : `Analysis for the ${category.label} category.`;
+
           acc[category.id] = {
               type: Type.OBJECT,
-              description: `Analysis for the ${category.label} category.`,
+              description,
               properties: {
                   label: { type: Type.STRING, description: 'A short, descriptive title (2-4 words).' },
                   prompt_text: { type: Type.STRING, description: 'A detailed, evocative description suitable for an AI image generator prompt.' },
@@ -126,7 +134,9 @@ Categories: ${categoryList}.
 Your output must be a valid JSON object matching the provided schema. For each category key, provide an object with three properties: 
 1. 'label': a short, descriptive title.
 2. 'prompt_text': a detailed, evocative description.
-3. 'tags': an array of 3-4 relevant, single-word, lowercase string tags.`;
+3. 'tags': an array of 3-4 relevant, single-word, lowercase string tags.
+
+If the image depicts a broader scene or environment, clearly explain the scene setup. Keep all lighting details ONLY in the lighting category (direction, quality, color, intensity, and how they affect subjects) and do not mix lighting into the scene description.`;
 
       const analyzeWithModel = async (model: string) => {
         const response = await ai.models.generateContent({

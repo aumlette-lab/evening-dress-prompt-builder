@@ -18,14 +18,14 @@ export const CATEGORIES: Category[] = [
   { id: 'hands_arms', label: 'Hands & Arms' },
   { id: 'expression', label: 'Facial Expression' }, // Changed label from "Expression"
 
-  // Corresponds to "Environment & Atmosphere" group
-  { id: 'scene', label: 'Scene' },
-  { id: 'lighting', label: 'Lighting' },
-  
   // Corresponds to "Photographic Style" group
   { id: 'style', label: 'Style' },
   { id: 'focal_feel', label: 'Focal Feel' },
   { id: 'camera_angle', label: 'Camera Angle' },
+
+  // Corresponds to "Environment & Atmosphere" group
+  { id: 'scene', label: 'Scene' },
+  { id: 'lighting', label: 'Lighting' },
 ];
 
 // This list defines the UI grouping for the main page.
@@ -52,18 +52,18 @@ export const VISUAL_ELEMENT_GROUPS: VisualElementGroup[] = [
     ]
   },
   {
-    title: 'Environment & Atmosphere',
-    categories: [
-        { id: 'scene', label: 'Scene' },
-        { id: 'lighting', label: 'Lighting' },
-    ]
-  },
-  {
     title: 'Photographic Style',
     categories: [
       { id: 'style', label: 'Style' },
       { id: 'focal_feel', label: 'Focal Feel' },
       { id: 'camera_angle', label: 'Camera Angle' }
+    ]
+  },
+  {
+    title: 'Environment & Atmosphere',
+    categories: [
+        { id: 'scene', label: 'Scene' },
+        { id: 'lighting', label: 'Lighting' },
     ]
   }
 ];

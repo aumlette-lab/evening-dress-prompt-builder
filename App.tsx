@@ -183,7 +183,9 @@ const App: React.FC = () => {
             } else if (isMultiSelection(selection)) {
                 if (selection.items.length > 0) {
                     const promptTexts = selection.items.map(item => item.prompt_text);
-                    sentence = `Change the ${categoryLabel} to ${promptTexts.join(', ')}.`;
+                    sentence = category.id === 'ethnicity'
+                        ? `Change the ethinicity and face completely to ${promptTexts.join(', ')}.`
+                        : `Change the ${categoryLabel} to ${promptTexts.join(', ')}.`;
                     mode = 'change';
                 } else {
                     sentence = `Keep the existing ${categoryLabel}.`;
@@ -191,7 +193,9 @@ const App: React.FC = () => {
                 }
             } else if (selection && 'prompt_text' in selection) {
                 const promptText = selection.prompt_text;
-                sentence = `Change the ${categoryLabel} to ${promptText}.`;
+                sentence = category.id === 'ethnicity'
+                    ? `Change the ethinicity and face completely to ${promptText}.`
+                    : `Change the ${categoryLabel} to ${promptText}.`;
                 mode = 'change';
             } else {
                 sentence = `Keep the existing ${categoryLabel}.`;

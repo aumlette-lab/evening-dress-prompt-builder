@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import type { TaxonomyData, TaxonomyItem } from '../types';
 import { CATEGORIES } from '../constants';
 import TaxonomyItemForm from './TaxonomyItemForm';
@@ -136,7 +136,23 @@ const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({ initialData, onClose,
         }
     };
 
-    const sortedActiveCategoryItems = localData[activeCategory]?.slice().sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.label.localeCompare(b.label)) || [];
+    const listContainerRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        // Reset scroll when switching categories to avoid ghosted content from previous scroll positions.
+        if (listContainerRef.current) {
+            listContainerRef.current.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+        }
+    }, [activeCategory]);
+
+    const sortedActiveCategoryItems = useMemo(() => {
+        const items = localData[activeCategory] || [];
+        // Guard against any stray items from other categories sticking around.
+        return items
+            .filter(item => item.category === activeCategory)
+            .slice()
+            .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || a.label.localeCompare(b.label));
+    }, [localData, activeCategory]);
     
     return (
     <>
@@ -164,7 +180,7 @@ const TaxonomyManager: React.FC<TaxonomyManagerProps> = ({ initialData, onClose,
                 ))}
               </nav>
             </aside>
-            <main className="flex-grow p-6 overflow-y-auto">
+            <main className="flex-grow p-6 overflow-y-auto" ref={listContainerRef} key={activeCategory}>
               <div className="flex justify-between items-center mb-4">
                  <h3 className="text-xl font-semibold text-cyan-400">{CATEGORIES.find(c => c.id === activeCategory)?.label} Items</h3>
                  <button onClick={() => { setEditingItem(null); setIsFormOpen(true); }} className="flex items-center gap-2 px-3 py-1.5 bg-fuchsia-600 hover:bg-fuchsia-500 text-white text-sm font-medium rounded-md transition-colors">
